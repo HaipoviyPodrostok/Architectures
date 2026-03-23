@@ -28,12 +28,7 @@ module alu_register_tb();
     .result_o (result_o)
   );
 
-  always begin
-    clk_i = 1'b0;
-    #(CLK_TIME / 2);
-    clk_i = 1'b1;
-    #(CLK_TIME / 2);
-  end
+  always #(CLK_TIME / 2) clk_i = ~clk_i;
 
   initial begin
     $dumpfile("alu_test.vcd");
@@ -46,19 +41,18 @@ module alu_register_tb();
     second_i = 8'd0;
     opcode_i = 2'b00;
 
-    #15 arstn_i = 1'b1;
+    #18 arstn_i = 1'b1;
 
-    @(posedge clk_i);
-      valid_i  = 1'b1;
-      opcode_i = 2'b00;
-      first_i  = 8'd2;
-      second_i = 8'd2;
+    @(negedge clk_i);
+      valid_i  <= 1'b1;
+      opcode_i <= 2'b00;
+      first_i  <= 8'd2;
+      second_i <= 8'd2;
 
-    @(posedge clk_i);
+    @(negedge clk_i);
       valid_i  = 1'b0;
 
-    @(posedge clk_i);
-      $finish;
+    #30  $finish;
   end
 
 endmodule
